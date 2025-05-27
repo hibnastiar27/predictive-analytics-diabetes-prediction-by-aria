@@ -175,9 +175,7 @@ Dalam proyek ini, menggunakan beberapa metrik evaluasi utama untuk menilai perfo
   
   Persentase prediksi yang benar dari total data. Meskipun umum digunakan, accuracy kurang cocok untuk data yang tidak seimbang karena bisa menyesatkan.
 
-  $$
-  \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
-  $$
+  $$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$$
 
 
 - **Precision** (kelas positif):
@@ -191,18 +189,14 @@ Dalam proyek ini, menggunakan beberapa metrik evaluasi utama untuk menilai perfo
   
   Proporsi data positif yang berhasil dideteksi.Penting untuk memastikan model dapat menangkap sebanyak mungkin kasus positif, terutama bila melewatkan kasus positif berisiko tinggi.
   
-  $$
-  \text{Recall} = \frac{TP}{TP + FN}
-  $$
+  $$\text{Recall} = \frac{TP}{TP + FN}$$
 
 
 - **F1-Score**: 
   
   Harmonik rata-rata Precision dan Recall, memberikan gambaran keseimbangan antara keduanya.F1-Score menjadi metrik utama saat kami ingin model memiliki performa seimbang antara ketepatan dan kelengkapan deteksi positif.
   
-  $$
-  \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
-  $$
+  $$\text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
 
 
 Metrik-metrik tersebut sangat relevan dalam konteks proyek ini dikarenakan data yang digunakan tidak seimbang, dimana kelas positif jumlahnya jauh lebih sedikit dibanding kelas negatif. Oleh karena itu, untuk mengutamakan evaluasi performa pada kelas positif agar model dapat memberikan hasil yang praktis dan dapat diandalkan.
