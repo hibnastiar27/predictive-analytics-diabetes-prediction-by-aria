@@ -74,59 +74,151 @@ Dataset ini berisi **100,000 sampel** dengan **9 fitur** yang terdiri dari data 
 
 Tahapan yang dilakukan:
 
-1. **Handling missing values**: Memastikan tidak ada nilai kosong.
-2. **Encoding fitur kategorikal**:
-
+1. **Encoding fitur kategorikal**:
    * Label Encoding untuk `gender`
    * One-Hot Encoding untuk `smoking_history`
-3. **Feature scaling**: Normalisasi `age`, `bmi`, `hba1c_level`, dan `blood_glucose_level` menggunakan **MinMaxScaler**.
-4. **Train-test split**: Membagi data menjadi 80% data latih dan 20% data uji.
+2. **Feature scaling**: Normalisasi `age`, `bmi`, `hba1c_level`, dan `blood_glucose_level` menggunakan **MinMaxScaler**.
+3. **Train-test split**: Membagi data menjadi 80% data latih dan 20% data uji.
 
 ## Modeling
 
-Model yang dibangun:
+Dalam proyek ini, digunakan tiga algoritma klasifikasi: Logistic Regression, Random Forest, dan XGBoost. Setiap model dipilih karena karakteristik uniknya dalam menangani data tabular dan ketidakseimbangan kelas.
+
+---
 
 1. **Logistic Regression**
 
+  > Logistic Regression adalah model statistik linier yang digunakan untuk memprediksi probabilitas kelas. Model ini cocok digunakan sebagai baseline karena sederhana dan mudah diinterpretasikan.
+  
    * Model baseline
    * Cenderung mudah diinterpretasikan
-   * Hyperparameter: `C` (regularisasi)
+   * Hyperparameter: `C` (regularisasi)  
+  
+  **Parameter yang digunakan:**
+
+  - max_iter=**1000**: Jumlah iterasi maksimum agar algoritma konvergen.
+  - random_state=**27**: Untuk memastikan hasil reproducible.
+
+  **Hasilnya :**
+
+  - Precision: 0.875
+  - Recall: 0.634
+  - F1-Score: 0.735
+
+---
 
 2. **Random Forest**
 
+  >Random Forest adalah algoritma ensemble yang membangun banyak decision tree dan menggabungkan hasilnya untuk meningkatkan akurasi dan mengurangi overfitting.
+  
    * Model ensemble berbasis decision tree
    * Lebih tangguh terhadap outlier dan multikolinearitas
    * Hyperparameter: `n_estimators`, `max_depth`, `min_samples_split`
 
+  **Parameter yang digunakan:**
+
+  - n_estimators=**100**: Jumlah pohon dalam hutan.
+  - random_state=**27**: Untuk reproducibility.
+
+  **Catatan:**
+
+  Belum dilakukan tuning terhadap parameter seperti max_depth, min_samples_split, dll. Penggunaan parameter default dimaksudkan sebagai baseline.
+
+  **Hasil:**
+
+  - Precision: 0.933
+  - Recall: 0.689
+  - F1-Score: 0.793
+
+---
+
 3. **XGBoost (Extreme Gradient Boosting)**
 
+
+  > XGBoost merupakan algoritma boosting berbasis pohon yang sangat efektif untuk data tabular dan dikenal dengan efisiensi serta akurasinya.
+  
    * Model boosting yang powerful untuk data tabular
    * Performa tinggi dan efisien
    * Dilakukan **RandomizedSearchCV** untuk mencari kombinasi hyperparameter terbaik
 
+  **Cara kerja singkat:**
+  
+  XGBoost membangun pohon secara bertahap (sekuensial) dan di setiap langkahnya berfokus pada memperbaiki kesalahan dari model sebelumnya menggunakan metode gradient descent.
+
+  **Parameter yang digunakan:**
+  
+  - use_label_encoder=**False**: Menonaktifkan encoder label default.
+  - eval_metric=**'logloss'**: Metode evaluasi selama pelatihan.
+  - random_state=**27**: Untuk hasil konsisten.
+
+  **Catatan:**
+  
+  Belum dilakukan tuning hyperparameter pada tahap ini. Semua parameter selain yang disebut di atas menggunakan nilai default dari pustaka xgboost.
+
+  **Hasil:**
+
+  - Precision: 0.956
+  - Recall: 0.689
+  - F1-Score: 0.801
+
 ### Model Terbaik
 
-Model XGBoost dengan hyperparameter tuning menghasilkan performa terbaik dan dijadikan model final.
+Model XGBoost memberikan hasil evaluasi tertinggi dari segi precision dan F1-Score, meskipun recall-nya setara dengan Random Forest. Oleh karena itu, XGBoost dipilih sebagai model akhir.
 
 ## Evaluation
 
 ### Metrik Evaluasi
 
-* **Accuracy** = (TP + TN) / Total
-* **Precision** = TP / (TP + FP)
-* **Recall** = TP / (TP + FN)
-* **F1 Score** = 2 × (Precision × Recall) / (Precision + Recall)
+Dalam proyek ini, menggunakan beberapa metrik evaluasi utama untuk menilai performa model klasifikasi, yaitu:
+
+- **Accuracy:** 
+  
+  Persentase prediksi yang benar dari total data. Meskipun umum digunakan, accuracy kurang cocok untuk data yang tidak seimbang karena bisa menyesatkan.
+
+  $$
+  \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+  $$
+
+
+- **Precision** (kelas positif):
+  
+  Proporsi prediksi positif yang benar-benar positif.Penting ketika konsekuensi kesalahan positif (false positive) harus diminimalkan, misalnya untuk menghindari alarm palsu.
+
+
+  $$
+  \text{Precision} = \frac{TP}{TP + FP}
+  $$
+
+
+- **Recall** (kelas positif): 
+  
+  Proporsi data positif yang berhasil dideteksi.Penting untuk memastikan model dapat menangkap sebanyak mungkin kasus positif, terutama bila melewatkan kasus positif berisiko tinggi.
+  
+  $$
+  \text{Recall} = \frac{TP}{TP + FN}
+  $$
+
+
+- **F1-Score**: 
+  
+  Harmonik rata-rata Precision dan Recall, memberikan gambaran keseimbangan antara keduanya.F1-Score menjadi metrik utama saat kami ingin model memiliki performa seimbang antara ketepatan dan kelengkapan deteksi positif.
+  
+  $$
+  \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+  $$
+
+
+Metrik-metrik tersebut sangat relevan dalam konteks proyek ini dikarenakan data yang digunakan tidak seimbang, dimana kelas positif jumlahnya jauh lebih sedikit dibanding kelas negatif. Oleh karena itu, untuk mengutamakan evaluasi performa pada kelas positif agar model dapat memberikan hasil yang praktis dan dapat diandalkan.
+
 
 ### Hasil Evaluasi
 
-
 | Model               | Accuracy | Precision | Recall | F1-Score |
-| ------------------- | -------- | --------- | ------ | -------- |
-| Logistic Regression | 87.5%    | 85%       | 89%    | 87%      |
-| Random Forest       | 91.2%    | 90%       | 92%    | 91%      |
-| XGBoost             | 91.9%    | 91%       | 92%    | 91%      |
-| XGBoost (tuned)     | 92.8%    | 92%       | 94%    | 93%      |
-
+| ------------------- | -------: | --------: | -----: | -------: |
+| Logistic Regression |      96% |       88% |    63% |      74% |
+| Random Forest       |      97% |       93% |    69% |      79% |
+| XGBoost             |      97% |       96% |    69% |      80% |
+| XGBoost Tuned       |      97% |       97% |    69% |      81% |
 
 Model **XGBoost** memberikan hasil evaluasi tertinggi dan konsisten di seluruh metrik, sehingga dipilih sebagai model akhir.
 
