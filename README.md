@@ -184,10 +184,7 @@ Dalam proyek ini, menggunakan beberapa metrik evaluasi utama untuk menilai perfo
   
   Proporsi prediksi positif yang benar-benar positif.Penting ketika konsekuensi kesalahan positif (false positive) harus diminimalkan, misalnya untuk menghindari alarm palsu.
 
-
-  $$
-  \text{Precision} = \frac{TP}{TP + FP}
-  $$
+  $$\text{Precision} = \frac{TP}{TP + FP}$$
 
 
 - **Recall** (kelas positif): 
